@@ -21,6 +21,7 @@ void HashCheck::setWorkfolder( std::string _Workfolder_address_ReadIN ){
     return;
 }
 
+/* set and readin checklist data and reset hash type */
 void HashCheck::setChecklist( uint8_t _Checklist_HashType , std::string _Checklist_address_ReadIN ){
     changeHashCheckMode( _Checklist_HashType );
     _Checklisk_address = _Checklist_address_ReadIN;
