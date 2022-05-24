@@ -40,3 +40,19 @@ void colorprintln( std::string _dataPrint , int _colorNUM , int _originalcolorNU
     setcolor( _originalcolorNUM );
     return;
 }
+
+/* print WARNING */
+void printWARNING( int _after_colorNUM ){
+    colorprintf( "WARNING" , PURPIL , WHITE );
+    std::cout << "> ";
+    setcolor( _after_colorNUM );
+    return;
+}
+
+/* print ERROR */
+void printERROR( int _after_colorNUM ){
+    colorprintf( "ERROR" , RED , WHITE );
+    std::cout << "> ";
+    setcolor( _after_colorNUM );
+    return;
+}
