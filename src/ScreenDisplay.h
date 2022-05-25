@@ -11,6 +11,7 @@ void colorprintln( std::string _dataPrint , int _colorNUM , int _originalcolorNU
 
 void printWARNING( int _after_colorNUM );
 void printERROR( int _after_colorNUM );
+void printLINEBEGIN( int _after_colorNUM );
 
 
 #endif

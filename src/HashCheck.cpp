@@ -9,23 +9,53 @@ void Worklist::create( std::string _Hash_ReadIN , std::string _fileaddress_ReadI
 
 /* ============================================= public ============================================= */
 
+/* class reset */
+void HashCheck::resetall(){
+    _HashType = NO_HASHTYPE;
+    _file_now_in_check = 0;
+    _Worklist_length = 0;
+    memset( _Worklist , NULL , sizeof( _Worklist ) );
+    _Checklist_address.clear();
+    _Workfolder_address.clear();
+    _is_checklistready = NOT_READY;
+    _is_hashtypeset = NOT_READY;
+    _is_Workfolderset = NOT_READY;
+    return;
+}
+
+void HashCheck::checkstart(){
+    if ( !ischeckavailable() )
+    {
+        return;
+    }
+}
+
 /* change or set the hash type the program uses */
 void HashCheck::changeHashCheckMode( uint8_t _newType ){
     _HashType = _newType;
+    _is_hashtypeset = READY;
     return;
 }
 
 /* set default folder */
 void HashCheck::setWorkfolder( std::string _Workfolder_address_ReadIN ){
     _Workfolder_address = _Workfolder_address_ReadIN;
+    _is_Workfolderset = READY;
     return;
 }
 
 /* set and readin checklist data and reset hash type */
 void HashCheck::setChecklist( uint8_t _Checklist_HashType , std::string _Checklist_address_ReadIN ){
     changeHashCheckMode( _Checklist_HashType );
-    _Checklisk_address = _Checklist_address_ReadIN;
-    readINchecklist( _Checklisk_address );
+    _Checklist_address = _Checklist_address_ReadIN;
+    _is_hashtypeset = READY;
+    readINchecklist( _Checklist_address );
+    if ( !_is_checklistready )
+    {
+        printLINEBEGIN( WHITE );
+        std::cout << "Checklist read but error occur" << std::endl;
+    }
+    //checklist set failed
     return;
 }
 
@@ -33,13 +63,17 @@ void HashCheck::setChecklist( uint8_t _Checklist_HashType , std::string _Checkli
 
 /* read checklist data from hard drive and check each line of data */
 void HashCheck::readINchecklist( std::string _Checklist_address ){
+    _is_checklistready = NOT_READY;
+    //reset checklist status
+    printLINEBEGIN( WHITE );
+    std::cout << "Start Checklist readin" << std::endl;
     std::ifstream _Checklist_Input;
     _Checklist_Input.open( _Checklist_address , std::ios::in );
     //set file input stream
     if ( !_Checklist_Input.is_open() )
     {
         printERROR( WHITE );
-        std::cout << "Unconformable address or checklist file not found" << std::endl;
+        std::cout << "Checklist file not found or unconformable path" << std::endl;
         return;
     }
     //error exists
@@ -83,6 +117,15 @@ void HashCheck::readINchecklist( std::string _Checklist_address ){
         std::string _address_IN_line;  /* the file address in this line */
         if ( _lineDATA[_bit+1] == '*' )
         {
+            if ( _is_Workfolderset == NOT_READY )
+            {
+                printWARNING( YELLOW );
+                std::cout << "In line " << _lineNUM << ": ";
+                setcolor( WHITE );
+                std::cout << "Worfolder unset but * found" << std::endl;
+                continue;
+            }
+            //check if workfolder isn't set
             _address_IN_line = _Workfolder_address;
             //copy default folder
             int _temp = _bit + 2;
@@ -108,7 +151,7 @@ void HashCheck::readINchecklist( std::string _Checklist_address ){
             printWARNING( YELLOW );
             std::cout << "In line " << _lineNUM << ": ";
             setcolor( WHITE );
-            std::cout << "File unfound or file address not correct" << std::endl;
+            std::cout << "File unfound or file path not correct" << std::endl;
             continue;
         }
         //check file address
@@ -116,6 +159,19 @@ void HashCheck::readINchecklist( std::string _Checklist_address ){
         _Worklist[_listlength].create( _Hash_IN_line , _address_IN_line );
         //copy hash code and file address to the worklist
     }
+    if ( _Worklist == NULL )
+    {
+        printERROR( WHITE );
+        std::cout << "Checklist file empty or no conformable data in Checklist file is found" << std::endl;
+        return;
+    }
+    printLINEBEGIN( WHITE );
+    std::cout << "Checklist is read in without error" << std::endl;
+    printLINEBEGIN( WHITE );
+    std::cout << "Totally " << _listlength << " comformable file found in Checklist, " << _listlength << " file added to Worklist" << std::endl;
+    _is_checklistready = READY;
+    _Worklist_length = _listlength;
+    return;
 }
 
 /* check if the hash code in this line is conformable or not*/
@@ -143,5 +199,28 @@ bool HashCheck::isaddressConformable( std::string _address ){
     {
         return true;
     }
+    return false;
+}
+
+/* check if Hashcheck is able to start */
+bool HashCheck::ischeckavailable(){
+    if ( _is_checklistready && _is_hashtypeset )
+    {
+        return true;
+    }
+    if ( !_is_checklistready )
+    {
+        printERROR( WHITE );
+        std::cout << "Checklist not set or unready" << std::endl;
+        return false;
+    }
+    if ( !_is_hashtypeset )
+    {
+        printERROR( WHITE );
+        std::cout << "No exact Hash type set" << std::endl;
+        return false;
+    }
+    printERROR( WHITE );
+    std::cout << "Unknown error exist" << std::endl;
     return false;
 }

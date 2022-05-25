@@ -56,3 +56,9 @@ void printERROR( int _after_colorNUM ){
     setcolor( _after_colorNUM );
     return;
 }
+
+/* print normally line begin */
+void printLINEBEGIN( int _after_colorNUM ){
+    colorprintf( "Hash Check Master> " , WHITE , _after_colorNUM );
+    return;
+}

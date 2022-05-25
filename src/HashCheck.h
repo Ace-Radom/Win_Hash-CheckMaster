@@ -19,6 +19,9 @@ struct Worklist{
 
 class HashCheck{
     public:
+        void resetall();
+        void checkstart();
+
         void changeHashCheckMode( uint8_t _newType );
         void setWorkfolder( std::string _Workfolder_address_ReadIN );
         void setChecklist( uint8_t _Checklist_HashType , std::string _Checklist_address_ReadIN );
@@ -28,12 +31,17 @@ class HashCheck{
         uint32_t _file_now_in_check;  /* the number of the file which is now in check */
         uint32_t _Worklist_length;  /* the length of the worklist */
         Worklist _Worklist[_Worklist_LengthMAX];  /* All files need to be checked */
-        std::string _Checklisk_address;  /* the address of the checklist */
+        std::string _Checklist_address;  /* the address of the checklist */
         std::string _Workfolder_address;  /* the address of the Workfolder (all file addresses begin with * will be set under this address) */
+
+        bool _is_checklistready;
+        bool _is_hashtypeset;
+        bool _is_Workfolderset;
 
         void readINchecklist( std::string _Checklist_address );
         bool linecheck( char *_line , uint8_t _HashTypeBit );
         bool isaddressConformable( std::string _address );
+        bool ischeckavailable();
 };
 
 #endif
