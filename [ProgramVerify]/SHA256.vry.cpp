@@ -4,7 +4,7 @@ using namespace std;
 
 char cmd[1024] = {0};
 
-char command[1024] = "certutil -hashfile \"D:\\C++Program\\Win_Hash-CheckMaster\\ProgramVerify\\_popen.vry.cpp\" SHA256";
+char command[1024] = "certutil -hashfile \"D:\\C++Program\\Win_Hash-CheckMaster\\[ProgramVerify]\\_popen.vry.cpp\" SHA256";
 
 int main(){
     FILE *file;

@@ -7,6 +7,22 @@ void Worklist::create( std::string _Hash_ReadIN , std::string _fileaddress_ReadI
     return;
 }
 
+/* clear this worklist subject */
+void Worklist::clear(){
+    _Hash.clear();
+    _fileaddress.clear();
+    return;
+}
+
+/* check if this worklist is empty */
+bool Worklist::isempty(){
+    if ( _Hash.empty() && _fileaddress.empty() )
+    {
+        return true;
+    }
+    return false;
+}
+
 /* ============================================= public ============================================= */
 
 /* class reset */
@@ -14,7 +30,11 @@ void HashCheck::resetall(){
     _HashType = NO_HASHTYPE;
     _file_now_in_check = 0;
     _Worklist_length = 0;
-    memset( _Worklist , NULL , sizeof( _Worklist ) );
+    for ( int i = 0 ; i < _Worklist_LengthMAX ; i++ )
+    {
+        _Worklist[i].clear();
+    }
+    //clear Worklist data
     _Checklist_address.clear();
     _Workfolder_address.clear();
     _is_checklistready = NOT_READY;
@@ -23,10 +43,17 @@ void HashCheck::resetall(){
     return;
 }
 
+/* start hash check */
 void HashCheck::checkstart(){
     if ( !ischeckavailable() )
     {
         return;
+    }
+    printLINEBEGIN( WHITE );
+    std::cout << "Hash check started..." << std::endl;
+    for ( int i = 1 ; i <= _Worklist_length ; i++ )
+    {
+
     }
 }
 
@@ -159,7 +186,7 @@ void HashCheck::readINchecklist( std::string _Checklist_address ){
         _Worklist[_listlength].create( _Hash_IN_line , _address_IN_line );
         //copy hash code and file address to the worklist
     }
-    if ( _Worklist == NULL )
+    if ( _listlength == 0 )
     {
         printERROR( WHITE );
         std::cout << "Checklist file empty or no conformable data in Checklist file is found" << std::endl;
@@ -192,10 +219,14 @@ bool HashCheck::linecheck( char *_line , uint8_t _HashTypeBit ){
 
 /* check file address */
 bool HashCheck::isaddressConformable( std::string _address ){
-    FILE *_addressTest;
-    char _addresscopy[1000];
-    strcpy( _addresscopy , _address.c_str() );
-    if ( ( _addressTest = _popen( _addresscopy , "r" ) ) != NULL )
+    make_checkfileexistbat( _address );
+    FILE *_batANS;
+    char _ans[1024] = {0};
+    _batANS = _popen( _Command_INuse.c_str() , "r" );
+    fgets( _ans , 1024 , _batANS );
+    _pclose( _batANS );
+    if ( strcmp( _ans , "FileExist\n" ) == 0 )  
+    //in cmd, command 'echo' always has a \n mark at the end of the line, and that'll also be copied by the fgets() into ans
     {
         return true;
     }
@@ -223,4 +254,58 @@ bool HashCheck::ischeckavailable(){
     printERROR( WHITE );
     std::cout << "Unknown error exist" << std::endl;
     return false;
+}
+
+bool HashCheck::doHashCheck( std::string _hash , std::string _address ){
+    make_hashcheckbat( _address );
+    FILE *_batANS;
+    char _ans[1024] = {0};
+    _batANS = _popen( _Command_INuse.c_str() , "r" );
+    fgets( _ans , 1024 , _batANS );
+    fgets( _ans , 1024 , _batANS );
+    //for 'certutil -hashfile' command, the hash code always appears in the second line
+    //therefore fgets() twice in order to get the data in the second line
+    pclose( _batANS );
+    std::string _hash_copy = _hash + "\n";
+    //just like before, there's a \n mark at the end of _ans, therefore _hash also needs to have a \n mark
+    if ( strcmp( _ans , _hash_copy.c_str() ) == 0 )
+    {
+        return true;
+    }
+    return false;
+}
+
+/* create command for file exist check */
+void HashCheck::make_checkfileexistbat( std::string _address ){
+    _Command_INuse.clear();
+    _Command_INuse = "if exist \"";
+    _Command_INuse += _address;
+    _Command_INuse += "\" echo FileExist";
+    //link file path and .bat command
+    return;
+}
+
+/* create command for certutil.exe */
+void HashCheck::make_hashcheckbat( std::string _address ){
+    _Command_INuse.clear();
+    _Command_INuse = "certutil -hashfile \"";
+    _Command_INuse += _address;
+    _Command_INuse += "\" ";
+    //link file path and .bat command
+    switch ( _HashType ){
+        case MD5:
+            _Command_INuse += "MD5";
+            break;
+        case SHA1:
+            _Command_INuse += "SHA1";
+            break;
+        case SHA256:
+            _Command_INuse += "SHA256";
+            break;
+        case SHA512:
+            _Command_INuse += "SHA512";
+            break;
+    }
+    //link hash type
+    return;
 }
