@@ -36,6 +36,7 @@ class HashCheck{
         std::string _Checklist_address;  /* the address of the checklist */
         std::string _Workfolder_address;  /* the address of the Workfolder (all file addresses begin with * will be set under this address) */
         std::string _Command_INuse;  /* record the command now in use */
+        std::string _wrong_hashcode;
 
         bool _is_checklistready;  /* status of the Checklist */
         bool _is_hashtypeset;  /* status of the hash type set */

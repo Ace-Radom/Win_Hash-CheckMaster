@@ -37,6 +37,7 @@ void HashCheck::resetall(){
     //clear Worklist data
     _Checklist_address.clear();
     _Workfolder_address.clear();
+    _Command_INuse.clear();
     _is_checklistready = NOT_READY;
     _is_hashtypeset = NOT_READY;
     _is_Workfolderset = NOT_READY;
@@ -50,11 +51,27 @@ void HashCheck::checkstart(){
         return;
     }
     printLINEBEGIN( WHITE );
-    std::cout << "Hash check started..." << std::endl;
-    for ( int i = 1 ; i <= _Worklist_length ; i++ )
+    std::cout << "Hash check start" << std::endl;
+    for ( _file_now_in_check = 1 ; _file_now_in_check <= _Worklist_length ; _file_now_in_check++ )
     {
-
+        printLINEBEGIN( WHITE );
+        std::cout << "Start line " << _file_now_in_check << " check, File path: " << _Worklist[_file_now_in_check]._fileaddress << std::endl;
+        if ( doHashCheck( _Worklist[_file_now_in_check]._Hash , _Worklist[_file_now_in_check]._fileaddress ) )
+        {
+            printLINEBEGIN( WHITE );
+            std::cout << "In line " << _file_now_in_check << ": ";
+            colorprintln( "Matched" , YELLOW , WHITE );
+        }
+        else
+        {
+            printERROR( WHITE );
+            std::cout << "In line " << _file_now_in_check << ": ";
+            colorprintf( "Unmatched" , YELLOW , WHITE );
+            std::cout << ", " << _Worklist[_file_now_in_check]._Hash << " is found in Checklist, but certutil returned " << _wrong_hashcode;
+        }
     }
+    printLINEBEGIN( WHITE );
+    std::cout << "Hash Check finished" << std::endl;
 }
 
 /* change or set the hash type the program uses */
@@ -193,7 +210,7 @@ void HashCheck::readINchecklist( std::string _Checklist_address ){
         return;
     }
     printLINEBEGIN( WHITE );
-    std::cout << "Checklist is read in without error" << std::endl;
+    std::cout << "Checklist is read without error" << std::endl;
     printLINEBEGIN( WHITE );
     std::cout << "Totally " << _listlength << " comformable file found in Checklist, " << _listlength << " file added to Worklist" << std::endl;
     _is_checklistready = READY;
@@ -256,6 +273,7 @@ bool HashCheck::ischeckavailable(){
     return false;
 }
 
+/* hash check core*/
 bool HashCheck::doHashCheck( std::string _hash , std::string _address ){
     make_hashcheckbat( _address );
     FILE *_batANS;
@@ -265,13 +283,17 @@ bool HashCheck::doHashCheck( std::string _hash , std::string _address ){
     fgets( _ans , 1024 , _batANS );
     //for 'certutil -hashfile' command, the hash code always appears in the second line
     //therefore fgets() twice in order to get the data in the second line
-    pclose( _batANS );
+    _pclose( _batANS );
+    printLINEBEGIN( WHITE );
+    std::cout << "In line " << _file_now_in_check << ": File Hash code come out as ";
+    colorprintf( _ans , YELLOW , WHITE );
     std::string _hash_copy = _hash + "\n";
     //just like before, there's a \n mark at the end of _ans, therefore _hash also needs to have a \n mark
     if ( strcmp( _ans , _hash_copy.c_str() ) == 0 )
     {
         return true;
     }
+    _wrong_hashcode = _ans;
     return false;
 }
 
