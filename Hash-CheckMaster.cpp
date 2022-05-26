@@ -1,5 +1,6 @@
 #include<bits/stdc++.h>
-#include"Command.h"
+#include"HashCheck.h"
+#include"ScreenDisplay.h"
 
 using namespace std;
 
