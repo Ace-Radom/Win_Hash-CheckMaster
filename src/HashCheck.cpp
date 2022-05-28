@@ -1,5 +1,7 @@
 #include"HashCheck.h"
 
+/* ============================================= struct ============================================= */
+
 /* read in a new file in worklist */
 void Worklist::create( std::string _Hash_ReadIN , std::string _fileaddress_ReadIN ){
     _Hash = _Hash_ReadIN;
@@ -38,6 +40,7 @@ void HashCheck::resetall(){
     _Checklist_address.clear();
     _Workfolder_address.clear();
     _Command_INuse.clear();
+    _files_under_workfolderpath.clear();
     _is_checklistready = NOT_READY;
     _is_hashtypeset = NOT_READY;
     _is_Workfolderset = NOT_READY;
@@ -81,9 +84,10 @@ void HashCheck::changeHashCheckMode( uint8_t _newType ){
     return;
 }
 
-/* set default folder */
+/* set default folder (wait to add path comform) */
 void HashCheck::setWorkfolder( std::string _Workfolder_address_ReadIN ){
     _Workfolder_address = _Workfolder_address_ReadIN;
+    _Workfolder_path_foldercound = 0;
     _is_Workfolderset = READY;
     return;
 }
@@ -100,6 +104,39 @@ void HashCheck::setChecklist( uint8_t _Checklist_HashType , std::string _Checkli
         std::cout << "Checklist read but error occur" << std::endl;
     }
     //checklist set failed
+    return;
+}
+
+/* create a checklist under Workfolder */
+void HashCheck::createChecklist( std::string _Checklist_name ){
+    if ( !_is_hashtypeset )
+    {
+        printERROR( WHITE );
+        std::cout << "No exact Hash type set" << std::endl;
+        return;
+    }
+    if ( !_is_Workfolderset )
+    {
+        printERROR( WHITE );
+        std::cout << "Workfolder not set" << std::endl;
+        return;
+    }
+    _files_under_workfolderpath.clear();
+    search_allfilesunderpath( _Workfolder_address , _files_under_workfolderpath );
+    std::string _Checklistpath = _Workfolder_address + "\\" + _Checklist_name;
+    //create Checklist path
+    std::ofstream _Checklist_create( _Checklistpath );
+    //create Checklist output path
+    for ( int i = 0 ; i < _files_under_workfolderpath.size() ; i++ )
+    {
+        std::string _file_hashcode_out = gethashcode( _files_under_workfolderpath[i] );
+        _file_hashcode_out[_file_hashcode_out.length()-1] = 0;
+        _Checklist_create << _file_hashcode_out << " ";
+        //delete the \n mark at the end of the hash code string
+        _Checklist_create << "*" + _files_under_workfolderpath[i].substr( _Workfolder_address.length() + 1 ) << std::endl;
+        //link file path
+    }
+    _Checklist_create.close();
     return;
 }
 
@@ -173,6 +210,8 @@ void HashCheck::readINchecklist( std::string _Checklist_address ){
             _address_IN_line = _Workfolder_address;
             //copy default folder
             int _temp = _bit + 2;
+            _address_IN_line += "\\";
+            //add '\' to the end of the Workfolder path in order to link file address
             while ( _lineDATA[_temp] != '\0' )
             {
                 _address_IN_line += _lineDATA[_temp];
@@ -275,26 +314,32 @@ bool HashCheck::ischeckavailable(){
 
 /* hash check core*/
 bool HashCheck::doHashCheck( std::string _hash , std::string _address ){
-    make_hashcheckbat( _address );
-    FILE *_batANS;
-    char _ans[1024] = {0};
-    _batANS = _popen( _Command_INuse.c_str() , "r" );
-    fgets( _ans , 1024 , _batANS );
-    fgets( _ans , 1024 , _batANS );
-    //for 'certutil -hashfile' command, the hash code always appears in the second line
-    //therefore fgets() twice in order to get the data in the second line
-    _pclose( _batANS );
+    std::string _ans = gethashcode( _address );
     printLINEBEGIN( WHITE );
     std::cout << "In line " << _file_now_in_check << ": File Hash code come out as ";
     colorprintf( _ans , YELLOW , WHITE );
     std::string _hash_copy = _hash + "\n";
     //just like before, there's a \n mark at the end of _ans, therefore _hash also needs to have a \n mark
-    if ( strcmp( _ans , _hash_copy.c_str() ) == 0 )
+    if ( strcmp( _ans.c_str() , _hash_copy.c_str() ) == 0 )
     {
         return true;
     }
     _wrong_hashcode = _ans;
     return false;
+}
+
+/* get the hash code from a file */
+std::string HashCheck::gethashcode( std::string _address ){
+    make_hashcheckbat( _address );
+    FILE *_batANS;
+    char _hashcodeget[1024] = {0};
+    _batANS = _popen( _Command_INuse.c_str() , "r" );
+    fgets( _hashcodeget , 1024 , _batANS );
+    fgets( _hashcodeget , 1024 , _batANS );
+    //for 'certutil -hashfile' command, the hash code always appears in the second line
+    //therefore fgets() twice in order to get the data in the second line
+    _pclose( _batANS );
+    return _hashcodeget;
 }
 
 /* create command for file exist check */
@@ -330,4 +375,62 @@ void HashCheck::make_hashcheckbat( std::string _address ){
     }
     //link hash type
     return;
+}
+
+/* get all files' name under Workfolder */
+void HashCheck::search_allfilesunderpath( std::string _folderaddress , std::vector <std::string> &_files ){
+    long long _FileHandle = 0;  /* File handle */
+    struct _finddata_t _fileinfo;  /* record file infos */
+    std::string _filefound;
+    if ( ( _FileHandle = _findfirst( _filefound.assign( _folderaddress ).append( "\\*" ).c_str() , &_fileinfo ) ) != -1 )
+    {
+        do
+        {
+            if ( _fileinfo.attrib & _A_SUBDIR )
+            {
+                if ( strcmp( _fileinfo.name , "." ) != 0 && strcmp( _fileinfo.name , ".." ) != 0 )
+                {
+                    //_files.push_back( _filefound.assign( _folderaddress ).append( "\\" ).append( _fileinfo.name ) );
+                    search_allfilesunderpath( _filefound.assign( _folderaddress ).append( "\\" ).append( _fileinfo.name ) , _files );
+                }
+            }
+            else
+            {
+                std::cout << _filefound.assign( _folderaddress ).append( "\\" ).append( _fileinfo.name ) << std::endl;
+                _files.push_back( _filefound.assign( _folderaddress ).append( "\\" ).append( _fileinfo.name ) );
+            }
+        }while( _findnext( _FileHandle , &_fileinfo ) == 0 );
+        _findclose( _FileHandle );
+    }
+    return;
+}
+
+/* get all files' name with given file extension under Workfolder */
+void HashCheck::search_allfilesunderpath_withformat( std::string _folderaddress , std::vector <std::string> &_files , std::string _format ){
+    std::vector <std::string> _filewithformatfound;  /* record all files with given format */
+    search_allfilesunderpath( _folderaddress , _files );
+    for ( int i = 0 ; i < _files.size() ; i++ )
+    {
+        if ( _files[i].substr( _files[i].length() - _format.length() ) == _format )  /* check file extension */
+        {
+            _filewithformatfound.push_back( _files[i] );
+        }
+    }
+    _files = _filewithformatfound;  /* overwrite original vector with all files been found */
+    return;
+}
+
+std::string workfolderpath_delete( std::string _str , uint32_t _num ){
+	int _count = 0;
+	uint32_t _posTemp = 0;
+	while ( ( _posTemp = _str.find( "\\" , _posTemp ) ) != std::string::npos )
+    {
+		_count++;
+		_posTemp++;
+		if ( _num == _count )
+        {
+			break;
+		}
+	}
+    return _str.substr( _posTemp );
 }
