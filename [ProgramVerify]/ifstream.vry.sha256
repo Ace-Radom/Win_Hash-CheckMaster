@@ -1,0 +1,8 @@
+ifstream.vry.sha256
+use for ifstream tests
+Main program under [ProgramVerify], ifstream.vry.cpp
+
+123456789
+12345678
+
+1234567
