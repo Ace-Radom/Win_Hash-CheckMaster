@@ -419,18 +419,3 @@ void HashCheck::search_allfilesunderpath_withformat( std::string _folderaddress 
     _files = _filewithformatfound;  /* overwrite original vector with all files been found */
     return;
 }
-
-std::string workfolderpath_delete( std::string _str , uint32_t _num ){
-	int _count = 0;
-	uint32_t _posTemp = 0;
-	while ( ( _posTemp = _str.find( "\\" , _posTemp ) ) != std::string::npos )
-    {
-		_count++;
-		_posTemp++;
-		if ( _num == _count )
-        {
-			break;
-		}
-	}
-    return _str.substr( _posTemp );
-}

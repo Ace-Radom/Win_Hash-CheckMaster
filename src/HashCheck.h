@@ -62,6 +62,4 @@ class HashCheck{
         void search_allfilesunderpath_withformat( std::string _folderaddress , std::vector <std::string> &_files , std::string _format );
 };
 
-std::string workfolderpath_delete( std::string _fullfilepath , uint32_t _num );
-
 #endif
