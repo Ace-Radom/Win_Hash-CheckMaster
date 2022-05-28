@@ -3,4 +3,4 @@ A program for checking if Hashcodes and files are matched or not, and allowed to
 
 用于同时检测多个文件哈希值的程序
 
-Still in developing
+Still in developing (now working on UI)
