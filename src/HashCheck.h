@@ -23,6 +23,7 @@ struct Worklist{
 class HashCheck{
     public:
         void resetall();
+        void certutilprecheck();
         void checkstart();
 
         void changeHashCheckMode( uint8_t _newType );

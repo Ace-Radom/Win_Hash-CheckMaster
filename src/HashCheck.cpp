@@ -123,6 +123,8 @@ void HashCheck::createChecklist( std::string _Checklist_name ){
     }
     _files_under_workfolderpath.clear();
     search_allfilesunderpath( _Workfolder_address , _files_under_workfolderpath );
+    printLINEBEGIN( WHITE );
+    std::cout << "Totally " << _files_under_workfolderpath.size() << " files found" << std::endl;
     std::string _Checklistpath = _Workfolder_address + "\\" + _Checklist_name;
     //create Checklist path
     std::ofstream _Checklist_create( _Checklistpath );
@@ -130,13 +132,68 @@ void HashCheck::createChecklist( std::string _Checklist_name ){
     for ( int i = 0 ; i < _files_under_workfolderpath.size() ; i++ )
     {
         std::string _file_hashcode_out = gethashcode( _files_under_workfolderpath[i] );
-        _file_hashcode_out[_file_hashcode_out.length()-1] = 0;
-        _Checklist_create << _file_hashcode_out << " ";
+        _file_hashcode_out[_file_hashcode_out.length()-1] = ' ';
+        //set the last digit in string as space in order to delete \n mark
+        printLINEBEGIN( WHITE );
+        std::cout << "For file " << i + 1 << ": File Path ";
+        colorprintf( _files_under_workfolderpath[i] , YELLOW , WHITE );
+        std::cout << ", Hash code ";
+        colorprintln( _file_hashcode_out , YELLOW , WHITE );
+        _Checklist_create << _file_hashcode_out;
         //delete the \n mark at the end of the hash code string
         _Checklist_create << "*" + _files_under_workfolderpath[i].substr( _Workfolder_address.length() + 1 ) << std::endl;
         //link file path
+        printLINEBEGIN( WHITE );
+        std::cout << "For file " << i + 1 << ": written to Checklist" << std::endl;
     }
     _Checklist_create.close();
+    printLINEBEGIN( WHITE );
+    std::cout << "Checklist created" << std::endl;
+    return;
+}
+
+/* create a checklist under Workfolder with files of given extension */
+void HashCheck::createChecklist( std::string _Checklist_name , std::string _format ){
+    if ( !_is_hashtypeset )
+    {
+        printERROR( WHITE );
+        std::cout << "No exact Hash type set" << std::endl;
+        return;
+    }
+    if ( !_is_Workfolderset )
+    {
+        printERROR( WHITE );
+        std::cout << "Workfolder not set" << std::endl;
+        return;
+    }
+    _files_under_workfolderpath.clear();
+    search_allfilesunderpath_withformat( _Workfolder_address , _files_under_workfolderpath , _format );
+    printLINEBEGIN( WHITE );
+    std::cout << "Totally " << _files_under_workfolderpath.size() << " files found" << std::endl;
+    std::string _Checklistpath = _Workfolder_address + "\\" + _Checklist_name;
+    //create Checklist path
+    std::ofstream _Checklist_create( _Checklistpath );
+    //create Checklist output path
+    for ( int i = 0 ; i < _files_under_workfolderpath.size() ; i++ )
+    {
+        std::string _file_hashcode_out = gethashcode( _files_under_workfolderpath[i] );
+        _file_hashcode_out[_file_hashcode_out.length()-1] = ' ';
+        //set the last digit in string as space in order to delete \n mark
+        printLINEBEGIN( WHITE );
+        std::cout << "For file " << i + 1 << ": File Path ";
+        colorprintf( _files_under_workfolderpath[i] , YELLOW , WHITE );
+        std::cout << ", Hash code ";
+        colorprintln( _file_hashcode_out , YELLOW , WHITE );
+        _Checklist_create << _file_hashcode_out;
+        //delete the \n mark at the end of the hash code string
+        _Checklist_create << "*" + _files_under_workfolderpath[i].substr( _Workfolder_address.length() + 1 ) << std::endl;
+        //link file path
+        printLINEBEGIN( WHITE );
+        std::cout << "For file " << i + 1 << ": written to Checklist" << std::endl;
+    }
+    _Checklist_create.close();
+    printLINEBEGIN( WHITE );
+    std::cout << "Checklist created" << std::endl;
     return;
 }
 
@@ -396,7 +453,7 @@ void HashCheck::search_allfilesunderpath( std::string _folderaddress , std::vect
             }
             else
             {
-                std::cout << _filefound.assign( _folderaddress ).append( "\\" ).append( _fileinfo.name ) << std::endl;
+                //std::cout << _filefound.assign( _folderaddress ).append( "\\" ).append( _fileinfo.name ) << std::endl;
                 _files.push_back( _filefound.assign( _folderaddress ).append( "\\" ).append( _fileinfo.name ) );
             }
         }while( _findnext( _FileHandle , &_fileinfo ) == 0 );
