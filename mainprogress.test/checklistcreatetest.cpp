@@ -12,7 +12,7 @@ int main(){
     Hash.setWorkfolder( address );
     getline( cin , address );
     Hash.changeHashCheckMode( MD5 );
-    Hash.createChecklist( address );
+    Hash.createChecklist( address , ".png" );
     system( "pause" );
     return 0;
 }
