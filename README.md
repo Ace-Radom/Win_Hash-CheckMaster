@@ -3,7 +3,7 @@ A program for checking if Hashcodes and files are matched or not, and allowed to
 
 用于同时检测多个文件哈希值的程序
 
-Still in developing (now working on UI)
+Still in developing (now working on UI and APIs)
 
 TIPS: 
 When you use it in practice, please remember a MD5-confirmed file doesn't absolutely mean a confirmed file.Since MD5 has only 16^32 possibilities, it's likely to be two different files that have the same MD5 and some network disk may download a MD5-confirmed file instead of a confirmed file,which may also cause a wrong result.
