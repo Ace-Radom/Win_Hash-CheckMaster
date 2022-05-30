@@ -1,0 +1,6 @@
+certutil-precheck
+file for checking certutil usage (MD5,SHA1,SHA256,SHA512)
+https://github.com/Ace-Radom/Win_Hash-CheckMaster
+
+WARNING!!! No change to this file is allowed
+Any changes in this file will make the main program unusable because of certutil-precheck
