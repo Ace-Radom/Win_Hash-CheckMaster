@@ -1,3 +1,6 @@
+#use for checking if certutil.exe under /system32 is usable or not
+#get the hash code of one special file and check if they match or not, and then comes out the result
+
 $logPath = "$PSScriptRoot\certutil-precheckOutputLOG"
 $filePath = "$PSScriptRoot\certutil-precheck"
 #start MD5 check
