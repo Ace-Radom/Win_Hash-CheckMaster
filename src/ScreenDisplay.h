@@ -14,6 +14,7 @@ void printERROR( int _after_colorNUM );
 void printLINEBEGIN( int _after_colorNUM );
 
 void printhelp();
+//void printhelpUI();
 
 void printCheckUnavailable( uint8_t _HashType );
 void printCheckAvailable( uint8_t _HashType );

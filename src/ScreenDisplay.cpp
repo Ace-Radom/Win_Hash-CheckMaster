@@ -63,6 +63,7 @@ void printLINEBEGIN( int _after_colorNUM ){
     return;
 }
 
+/* print help page (api) */
 void printhelp(){
     printLINEBEGIN( WHITE );
     colorprintf( "-l ${Checklist Path}" , YELLOW , WHITE );
@@ -75,7 +76,13 @@ void printhelp(){
     std::cout << ": create one hash checklist for a folder" << std::endl;
     printLINEBEGIN( WHITE );
     colorprintf( "-c ${Folder Path} -e ${File Extension} -ln ${Checklist Name}" , YELLOW , WHITE );
-    std::cout << ": create one hash checklist only with files with given extension for a folder " << std::endl;
+    std::cout << ": create one hash checklist only with files with given extension for a folder" << std::endl;
+    //printLINEBEGIN( WHITE );
+    //colorprintf( "start" , YELLOW , WHITE );
+    //std::cout << ": start Hash check or Checklist create" << std::endl;
+    printLINEBEGIN( WHITE );
+    colorprintf( "end" , YELLOW , WHITE );
+    std::cout << ": end this program" << std::endl;
     return; 
 }
 
