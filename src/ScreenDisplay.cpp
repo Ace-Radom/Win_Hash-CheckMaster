@@ -62,3 +62,57 @@ void printLINEBEGIN( int _after_colorNUM ){
     colorprintf( "Hash Check Master> " , WHITE , _after_colorNUM );
     return;
 }
+
+void printhelp(){
+    printLINEBEGIN( WHITE );
+    colorprintf( "-l ${Checklist Path}" , YELLOW , WHITE );
+    std::cout << ": set the checklist path" << std::endl;
+    printLINEBEGIN( WHITE );
+    colorprintf( "-d ${Workfolder Path}" , YELLOW , WHITE );
+    std::cout << ": set default workfolder" << std::endl;
+    printLINEBEGIN( WHITE );
+    colorprintf( "-c ${Folder Path} -ln ${Checklist Name}" , YELLOW , WHITE );
+    std::cout << ": create one hash checklist for a folder" << std::endl;
+    printLINEBEGIN( WHITE );
+    colorprintf( "-c ${Folder Path} -e ${File Extension} -ln ${Checklist Name}" , YELLOW , WHITE );
+    std::cout << ": create one hash checklist only with files with given extension for a folder " << std::endl;
+    return; 
+}
+
+/* print unavailable hash type in main program */
+void printCheckUnavailable( uint8_t _HashType ){
+    printWARNING( WHITE );
+    colorprintf( HashTypeChange( _HashType ) , YELLOW , WHITE );
+    std::cout << " Check is Unavailable" << std::endl;
+    return;
+}
+
+/* print available hash type in main program */
+void printCheckAvailable( uint8_t _HashType ){
+    printLINEBEGIN( WHITE );
+    colorprintf( HashTypeChange( _HashType ) , YELLOW , WHITE );
+    std::cout << " Check is Available" << std::endl;
+    return;
+}
+
+/* change Hash type from uint8_t to char* */
+std::string HashTypeChange( uint8_t _HashType ){
+    switch ( _HashType ){
+        case MD5:
+            return "MD5";
+            break;
+    
+        case SHA1:
+            return "SHA1";
+            break;
+    
+        case SHA256:
+            return "SHA256";
+            break;
+    
+        case SHA512:
+            return "SHA512";
+            break;
+    }
+    return "error";
+}
