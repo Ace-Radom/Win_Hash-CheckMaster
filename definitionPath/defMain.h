@@ -22,6 +22,11 @@
 
 /* define command NUM */
 #define Program_Start 0x05
+#define _l_ 0x06
+#define _d_ 0x07
+#define _c_ 0x08
+#define _ln_ 0x09
+#define _e_ 0x10
 
 /* define display color NUM */
 #define RED 0x20
