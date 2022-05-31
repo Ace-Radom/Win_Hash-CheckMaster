@@ -69,7 +69,7 @@ Get-CimInstance -ClassName Win32_Processor | Select-Object -property Name | Out-
 Write-Color -Text "[OS]> CPU: " , $( ( Get-Content $logPath -Tail 3 )[-3] ) -Color white , yellow
 #get RAM
 $RAMinTotal = ( ( Get-CimInstance Win32_PhysicalMemory | Measure-Object -Property capacity -Sum ).sum / 1gb )
-Write-Color -Text "[OS]> Physic RAM: " , $RAMinTotal -Color white , yellow
+Write-Color -Text "[OS]> Physic RAM: " , $RAMinTotal , "GB" -Color white , yellow , yellow
 #get powershell version
 $host | Select-Object -property Version | Out-file $logPath
 Write-Color -Text "[OS]> Powershell Version: " , $( ( Get-Content $logPath -Tail 3 )[-3] ) -Color white , yellow
