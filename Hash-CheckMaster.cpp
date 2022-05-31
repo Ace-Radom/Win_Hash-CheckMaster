@@ -8,10 +8,18 @@
 
 using namespace std;
 
-bool PSVersionCheck();
-void HashPrecheck();
-
 bool HashAvailability[5];  /* availability for four hash types */
+
+HashCheck Hash;
+//logIO LOG;
+
+int CheckTypeChange( string _type );
+bool PSVersionCheck();
+bool Complete;
+void HashPrecheck();
+string strlowercase( string _str );
+void check();
+void create();
 
 int main(){
     printLINEBEGIN( WHITE );
@@ -42,15 +50,64 @@ int main(){
     }
     printLINEBEGIN( WHITE );
     cout << "Pre-Check complete" << endl;
+    Hash.resetall();
     while ( 1 )
     {
+        Complete = false;
         printLINEBEGIN( WHITE );
-        string _COMMAND;
-        getline( cin , _COMMAND );
-        cout << _COMMAND << endl;
+        cout << "Hash Check or Create Checklist? (input check / create)" << endl;
+        printLINEBEGIN( WHITE );
+        string Command;
+        getline( cin , Command );
+        if ( strlowercase( Command ) == "check" )
+        {
+            check();
+            if ( Complete )
+            {
+                system( "pause" );
+                return 0;
+            }
+        }
+        else
+        {
+            if ( strlowercase( Command ) == "create" )
+            {
+                create();
+                if ( Complete )
+                {
+                    system( "pause" );
+                    return 0;
+                }
+            }
+            else
+            {
+                printERROR( WHITE );
+                cout << "Wrong Command" << endl;
+            }
+        }
     }
     system( "pause" );
     return 0;
+}
+
+int CheckTypeChange( string _type ){
+    if ( strlowercase( _type ) == "md5" )
+    {
+        return MD5;
+    }
+    if ( strlowercase( _type ) == "sha1" )
+    {
+        return SHA1;
+    }
+    if ( strlowercase( _type ) == "sha256" )
+    {
+        return SHA256;
+    }
+    if ( strlowercase( _type ) == "sha512" )
+    {
+        return SHA512;
+    }
+    return _ERROR_;
 }
 
 /* check if PS version is newer then 3.0 or not */
@@ -121,5 +178,69 @@ void HashPrecheck(){
         printCheckAvailable( SHA512 );
         HashAvailability[SHA512] = READY;
     }
+    return;
+}
+
+/* Lowercase all upper case letters */
+string strlowercase( string _str ){
+    for ( int i = 0 ; i < _str.length() ; i++ )
+    {
+        if ( _str[i] >= 'A' && _str[i] <= 'Z' )
+        {
+            _str[i] += 32;
+        }
+    }
+    return _str;
+}
+
+void check(){
+    printLINEBEGIN( WHITE );
+    cout << "Please input Workfolder Path: ";
+    string _Workfolder;
+    getline( cin , _Workfolder );
+    printLINEBEGIN( WHITE );
+    cout << "Please set Checklist Path: ";
+    string _Checklist;
+    getline( cin , _Checklist );
+    printLINEBEGIN( WHITE );
+    cout << "Please set Hash Type: ";
+    string _Type;
+    cin >> _Type;
+    if ( CheckTypeChange( _Type ) == _ERROR_ )
+    {
+        printERROR( WHITE );
+        cout << "Wrong or unsupported Hash Type" << endl;
+        return;
+    }
+    Hash.setWorkfolder( _Workfolder );
+    Hash.setChecklist( CheckTypeChange( _Type ) , _Checklist );
+    Hash.checkstart();
+    Complete = true;
+    return;
+}
+
+void create(){
+    printLINEBEGIN( WHITE );
+    cout << "Please input Workfolder Path: ";
+    string _Workfolder;
+    getline( cin , _Workfolder );
+    printLINEBEGIN( WHITE );
+    cout << "Please set Checklist Name: ";
+    string _Checklist;
+    getline( cin , _Checklist );
+    printLINEBEGIN( WHITE );
+    cout << "Please set Hash Type: ";
+    string _Type;
+    cin >> _Type;
+    if ( CheckTypeChange( _Type ) == _ERROR_ )
+    {
+        printERROR( WHITE );
+        cout << "Wrong or unsupported Hash Type" << endl;
+        return;
+    }
+    Hash.setWorkfolder( _Workfolder );
+    Hash.changeHashCheckMode( CheckTypeChange( _Type ) );
+    Hash.createChecklist( _Checklist );
+    Complete = true;
     return;
 }
