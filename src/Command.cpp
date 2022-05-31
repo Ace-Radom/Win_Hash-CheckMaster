@@ -1,17 +1,13 @@
 #include"Command.h"
 
-/* return command code/number 
-   in order to use switch in main class */
-int _CommandCodeReturn( const char *_Command ){
-    if ( strcmp( _Command , "./start" ) == 0 )
-        return Program_Start;
-    return _ERROR_;
-}
+CommandData _CMDDATA[]{
+    { "-l"  , _l_ },
+    { "-d"  , _d_ },
+    { "-c"  , _c_ },
+    { "-ln" , _ln_ },
+    { "-e"  , _e_ }
+};
 
-/* program end check 
-   when yes (input "./end"), return true */
-bool _ProgramEndCheck( const char *_Command ){
-    if ( strcmp( _Command , "./end" ) == 0 )
-        return true;
-    return false;
+void CommandCenter::read( std::string _Command ){
+
 }
