@@ -1,0 +1,9 @@
+Record the MD5, SHA1, SHA256, SHA512 codes for .\certutil-precheck
+This file is not directly used by any program in Win_Hash-CheckMaster Project
+
+MD5:    bd28a36bead761bfb8da8db32aea820a
+SHA1:   edc5b0e51d43fac1a5418b7c4d64042da5a37655
+SHA256: cedc6857629142e8e858f7b437aa1226813ea55160f8f03d98cd9a4d2f13d599
+SHA512: 00a22fc1eea8abd9f16d9f7aca4253af2bcaf618fcf9ef82ab0d84d701efc9237c9c1ffaa8c1bb04785725591484bbdd64758879ef4d32e973f9f2148ca08b27
+
+#End of this file
