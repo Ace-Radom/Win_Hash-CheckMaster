@@ -1,6 +1,8 @@
 # Win_Hash-CheckMaster
 A program for checking if Hashcodes and files are matched or not, and allowed to check multiple files in one time.
 
+**This project is closed and rebuilt. New repo: [Rena_HashCheckTool](https://github.com/Ace-Radom/Rena_HashCheckTool)**
+
 用于同时检测多个文件哈希值的程序
 
 Still in developing (now working on UI and APIs)
